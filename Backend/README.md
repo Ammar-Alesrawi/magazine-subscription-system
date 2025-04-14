@@ -36,15 +36,14 @@ project/ │ └───Backend/ ├── config/ ├── controllers/ ├�
 
 ### 1. Clone the repository
 
-```bash
 git clone https://github.com/Ammar-Alesrawi/magazine-subscription-system.git
 cd project/Backend
 
-2.  Install dependencies
+### 2.  Install dependencies
 
 npm install
 
-3. Create a .env file
+### 3. Create a .env file
 
 # Database configuration
 DATABASE_URL="postgresql://postgres:your_db_password@localhost:5432/Magazine_db"
@@ -61,7 +60,7 @@ ADMIN_EMAIL="admin_email@gmail.com"
 # JWT Secret
 JWT_SECRET="your_super_secret_jwt_key"
 
-4. Run development server
+### 4. Run development server
 
 npm run dev
 
