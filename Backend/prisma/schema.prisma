@@ -1,0 +1,108 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  name          String
+  email         String         @unique
+  password      String
+  isDeleted     Boolean        @default(false)
+  role          Role
+  subscriptions Subscription[]
+  payments      Payment[]
+  comments      Comment[]
+  activityLogs  ActivityLog[]
+}
+
+model ActivityLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  action    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Magazine {
+  id            Int            @id @default(autoincrement())
+  name          String
+  description   String
+  releaseDate   DateTime
+  articles      Article[]
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id         Int                @id @default(autoincrement())
+  userId     Int
+  magazineId Int
+  startDate  DateTime
+  endDate    DateTime
+  status     SubscriptionStatus
+  user       User               @relation(fields: [userId], references: [id])
+  magazine   Magazine           @relation(fields: [magazineId], references: [id])
+  payments   Payment[]
+}
+
+model Payment {
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  subscriptionId Int
+  amount         Float
+  method         String
+  paymentDate    DateTime
+  user           User         @relation(fields: [userId], references: [id])
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+}
+
+model Article {
+  id          Int       @id @default(autoincrement())
+  title       String
+  content     String
+  magazineId  Int
+  publishDate DateTime  @default(now())
+  magazine    Magazine  @relation(fields: [magazineId], references: [id])
+  comments    Comment[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  articleId Int
+  userId    Int
+  content   String
+   status    CommentStatus
+  createdAt DateTime @default(now())
+  article   Article  @relation(fields: [articleId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  SUBSCRIBER
+  PUBLISHER
+  ADMIN
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  PENDING
+}
+
+enum CommentStatus {
+  ACTIVE
+  FLAGGED
+  DELETED
+}
